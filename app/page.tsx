@@ -16,13 +16,14 @@ import CheckIcon from "@mui/icons-material/Check";
 import { Dropdown } from "./component/Dropdown";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { dividerClasses, DividerClassKey } from "@mui/material";
 
 export default function Home() {
   const [value, setValue] = useState("");
   const [list, setlist] = useState<string[]>([]);
   const [indexNumber, setIndexNumber] = useState<number | null>(null);
+  const Edit = useRef<HTMLInputElement>(null);
 
   return (
     <>
@@ -143,7 +144,7 @@ export default function Home() {
                   className="bg-blue-400 mx-2 rounded-md p-2 text-nowrap text-white"
                   type="submit"
                 >
-                添加{" "}
+                  添加{" "}
                 </button>
               </form>
 
@@ -166,18 +167,20 @@ export default function Home() {
                       >
                         {indexNumber === index ? (
                           <div className="flex">
-                            <input
-                              className="flex-1"
-                              value={inputName}
-                              onChange={(e) => {
+                            <input className="flex-1" type="text" ref={Edit} defaultValue={inputName}/>
+                            <div
+                              className="bg-green-500 p-2 rounded-md cursor-pointer hover:opacity-70"
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                console.log(Edit.current?.value);
                                 const newArray = list.slice();
-                                newArray[index] = e.target.value;
+                                newArray.splice(index, 1, Edit.current?.value as string);
                                 setlist(newArray);
+                                setIndexNumber(null)
                               }}
-                              type="text"
-                            />
-                            <div className="bg-green-500 p-2 rounded-md cursor-pointer hover:opacity-70">
+                            >
                               <CheckIcon />
+                              
                             </div>
                           </div>
                         ) : (
@@ -197,6 +200,9 @@ export default function Home() {
                     </div>
                   );
                 })}
+              </div>
+              <div className="px-2">
+                array : {JSON.stringify(list, null, 5)}
               </div>
             </div>
           </div>
